@@ -100,6 +100,105 @@ class Gerenciamento():
         self.desconectar()
         
         return itens
+    
+    def getVendedoresNome(self) -> list:
+        self.conectar()
         
+        self.cursor.execute("SELECT nome FROM vendedores")
+        vendedores_nome = self.cursor.fetchall()
+        
+        self.desconectar()
+        
+        return [vendedor[0] for vendedor in vendedores_nome]
+    
+    def getCompradoresNome(self) -> list:
+        self.conectar()
+        
+        self.cursor.execute("SELECT nome FROM compradores")
+        compradores_nome = self.cursor.fetchall()
+        
+        self.desconectar()
+        
+        return [comprador[0] for comprador in compradores_nome]
+    
+    def getItensNome(self) -> list:
+        self.conectar()
+        
+        self.cursor.execute("SELECT nome FROM itens")
+        itens_nome = self.cursor.fetchall()
+        
+        self.desconectar()
+        
+        return [item[0] for item in itens_nome]
+    
+    def getCompradorDinheiro(self, nome: str) -> float:
+        self.conectar()
+        
+        self.cursor.execute("SELECT dinheiro FROM compradores WHERE nome=?", (nome,))
+        dinheiro = self.cursor.fetchone()
+        
+        self.desconectar()
+        
+        if dinheiro:
+            return dinheiro[0]
+        else:
+            return 0
+        
+    def getItemPreco(self, nome: str) -> float:
+        self.conectar()
+        
+        self.cursor.execute("SELECT preco FROM itens WHERE nome=?", (nome,))
+        preco = self.cursor.fetchone()
+        
+        self.desconectar()
+        
+        if preco:
+            return preco[0]
+        else:
+            return 0
+        
+    def setCompradorDinheiro(self, nome: str, dinheiro: float) -> float:
+        self.conectar()
+        
+        self.cursor.execute("UPDATE compradores SET dinheiro=? WHERE nome=?", (self.getCompradorDinheiro(nome) - dinheiro, nome))
+        self.connection.commit()
+        
+        self.desconectar()
+        
+        return self.getCompradorDinheiro(nome)
+    
+    def getItensCarrinho(self, nome: str) -> str:
+        self.conectar()
+        
+        self.cursor.execute("SELECT carrinho FROM compradores WHERE nome=?", (nome,))
+        carrinho = self.cursor.fetchone()
+        
+        self.desconectar()
+        
+        if carrinho:
+            return carrinho[0]
+        else:
+            return ""
+        
+    def adicionarItemCarrinho(self, nome: str, item: str) -> None:
+        carrinho = self.getItensCarrinho(nome)
+        
+        carrinho = carrinho + " " + item
+        
+        self.conectar()
+        
+        self.cursor.execute("UPDATE compradores SET carrinho=? WHERE nome=?", (carrinho, nome))
+        self.connection.commit()
+        
+        self.desconectar()
+        
+    def setItemCarrinho(self, nome: str, carrinho: str) -> None:
+        self.conectar()
+        
+        self.cursor.execute("UPDATE compradores SET carrinho=? WHERE nome=?", (carrinho, nome))
+        self.connection.commit()
+        
+        self.desconectar()
+    
 if __name__ == '__main__':
     pass

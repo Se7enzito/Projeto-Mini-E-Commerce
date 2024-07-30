@@ -148,13 +148,18 @@
 
                             <div class="form-group">
                                 <label for="vendedor">Vendedor</label>
-                                <input type="text" class="form-control" id="vendedor" name="vendedor" required>
+                                <select class="form-select" id="vendedor" name="vendedor" required>
+                                    <option value="">Selecione um vendedor...</option>
+                                    {% for vendedor in vendedores %}
+                                        <option value="{{ vendedor[1] }}">{{ vendedor[1] }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                         </div>
 
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                            <button type="button" class="btn btn-primary">Salvar</button>
+                            <button type="submit" class="btn btn-primary">Salvar</button>
                         </div>
                     </form>
                 </div>
@@ -170,22 +175,34 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="comprador">Comprador</label>
-                            <input type="text" class="form-control" id="comprador" name="comprador" required>
+                    <form action="/adicionar_item" method="post">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="comprador">Comprador</label>
+                                <select class="form-select" id="comprador" name="comprador" required>
+                                    <option value="">Selecione um comprador...</option>
+                                    {% for comprador in compradores %}
+                                        <option value="{{ comprador[1] }}">{{ comprador[1] }}: R${{ comprador[3] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="item">Item</label>
+                                <select class="form-select" id="item" name="item" required>
+                                    <option value="">Selecione um item...</option>
+                                    {% for item in itens %}
+                                        <option value="{{ item[1] }}">{{ item[1] }}: R${{ item[2] }} [{{ item[3] }}]</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="item">Item</label>
-                            <input type="text" class="form-control" id="item" name="item" required>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Adicionar</button>
                         </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save</button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -202,18 +219,25 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="comprador">Comprador</label>
-                            <input type="text" class="form-control" id="comprador" name="comprador" required>
+                            <select class="form-select" id="comprador" name="comprador" required>
+                                <option value="">Selecione um comprador...</option>
+                                {% for comprador in compradores %}
+                                    <option value="{{ comprador[1] }}">{{ comprador[1] }}: R${{ comprador[3] }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
 
                         <div class="form-group">
                             <label for="item">Item</label>
-                            <input type="text" class="form-control" id="item" name="item" required>
+                            <select class="form-select" id="item" name="item" required>
+                                <option value="">Selecione um item...</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                        <button type="submit" class="btn btn-primary">Remover</button>
                     </div>
                 </div>
             </div>
@@ -239,8 +263,8 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Ver</button>
                         </div>
                     </form>
                 </div>
@@ -250,6 +274,16 @@
 
     <main>
         <div>
+            <div>
+                <h5>Carrinho</h5>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalVerCarrinho">Ver Carrinho</button>
+
+                <div class="carrinho">
+                    {% for i in carrinho %}
+                    <p>{{ i }}</p>
+                    {% endfor %}
+                </div>
+            </div>
             <div>
                 <h5>Compradores</h5>
 
@@ -283,7 +317,7 @@
 
                     {% for vendedor in vendedores %}
                     <tr>
-                        {% for dado in vendedor %}
+                        {% for dado in vendedor[1:] %}
                         <td>{{ dado }}</td>
                         {% endfor %}
                     </tr>
@@ -303,7 +337,7 @@
 
                     {% for item in itens %}
                     <tr>
-                        {% for dado in item %}
+                        {% for dado in item[1:] %}
                         <td>{{ dado }}</td>
                         {% endfor %}
                     </tr>
