@@ -256,10 +256,10 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="comprador">Comprador</label>
-                                <input type="text" class="form-control" id="comprador" name="comprador" required>
+                                {% for comprador in compradores %}
+                                    <option value="{{ comprador[1] }}">{{ comprador[1] }}: R${{ comprador[3] }}</option>
+                                {% endfor %}
                             </div>
-
-                            <div id="carrinho"></div>
                         </div>
 
                         <div class="modal-footer">
