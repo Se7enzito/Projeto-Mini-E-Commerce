@@ -233,6 +233,10 @@
                             <label for="item">Item</label>
                             <select class="form-select" id="item" name="item" required>
                                 <option value="">Selecione um item...</option>
+                                {% for item in itens %}
+                                <option value="{{ item[1:] }}">{{ item[1] }}: R${{ item[2] }} [{{ item[3] }}]
+                                </option>
+                                {% endfor %}
                             </select>
                         </div>
                     </div>
