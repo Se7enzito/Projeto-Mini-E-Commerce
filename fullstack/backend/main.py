@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import Flask, render_template, request, url_for, redirect, jsonify
 from db.dbAPI import Gerenciamento
 
 app = Flask(__name__, template_folder="../frontend/templates")
@@ -12,6 +12,12 @@ geren = Gerenciamento()
 def index():
     message = ''
     return render_template('index.html', message = message, compradores = geren.getCompradores(), vendedores = geren.getVendedores(), itens = geren.getItens())
+    
+@app.route('/get_items', methods=['GET'])
+def get_items():
+    comprador = request.args.get('comprador')
+    items = geren.getItensCarrinho(comprador)
+    return jsonify(items)
 
 @app.route('/criar_comprador', methods=['POST'])
 def criar_comprador():
@@ -68,26 +74,16 @@ def adicionar_item():
         comprador = request.form.get('comprador')
         item = request.form.get('item')
         
-        compradores = geren.getCompradoresNome()
-        
-        if comprador not in compradores:
-            return redirect(url_for('index', message = 'Comprador não encontrado'))
-        
-        itens = geren.getItensNome()
-        
-        if item not in itens:
-            return redirect(url_for('index', message = 'Item não encontrado'))
-        
         dinheiro = geren.getCompradorDinheiro(comprador)
-        preco = geren.getItemPreco(comprador)
+        preco = geren.getItemPreco(item)
         
         if dinheiro < preco:
-            return redirect(url_for('index', message = 'Dinheiro insuficiente'))
+            return redirect(url_for('index', message = 'Você não possui dinheiro suficiente para este item'))
         
         geren.setCompradorDinheiro(comprador, dinheiro - preco)
         geren.adicionarItemCarrinho(comprador, item)
-        
-        return redirect(url_for('index', message = 'Item adicionado ao carrinho com sucesso'))
+            
+        return redirect(url_for('index', message='Item adicionado ao carrinho com sucesso'))
 
 @app.route('/remover_item', methods=['POST'])
 def remover_item():
@@ -95,16 +91,7 @@ def remover_item():
         comprador = request.form.get('comprador')
         item = request.form.get('item')
         
-        compradores = geren.getCompradoresNome()
-        
-        if comprador not in compradores:
-            return redirect(url_for('index', message = 'Comprador não encontrado'))
-        
         itens = geren.getItensCarrinho(comprador)
-        
-        if item not in itens:
-            return redirect(url_for('index', message = 'Item não encontrado no carrinho'))
-        
         listaItens = itens.split(' ')
         itensAtua = ""
         
@@ -124,10 +111,6 @@ def ver_carrinho():
         comprador = request.form.get('comprador')
         
         compradores = geren.getCompradoresNome()
-        
-        if comprador not in compradores:
-            return redirect(url_for('index', message = 'Comprador não encontrado'))
-        
         carrinho = geren.getItensCarrinho(comprador)
         
         return redirect(url_for('index', carrinho = carrinho))

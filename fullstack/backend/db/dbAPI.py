@@ -6,199 +6,119 @@ class Gerenciamento():
         self.connection = None
         self.cursor = None
 
-    def conectar(self) -> None:
+    def __enter__(self):
         self.connection = sql.connect(self.database)
         self.cursor = self.connection.cursor()
+        return self
 
-    def desconectar(self) -> None:
-        self.connection.close()
-        
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.connection:
+            self.connection.commit()
+            self.cursor.close()
+            self.connection.close()
+
     def criar_tabelas(self) -> None:
-        self.conectar()
-        
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS compradores (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            sobrenome TEXT NOT NULL,
-            dinheiro REAL NOT NULL,
-            cpf TEXT UNIQUE NOT NULL,
-            carrinho TEXT
-        )''')
-        
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS vendedores (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            sobrenome TEXT NOT NULL,
-            cnpj TEXT UNIQUE NOT NULL
+        with self:
+            self.cursor.execute('''CREATE TABLE IF NOT EXISTS compradores (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                sobrenome TEXT NOT NULL,
+                dinheiro REAL NOT NULL,
+                cpf TEXT UNIQUE NOT NULL,
+                carrinho TEXT
             )''')
-        
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS itens (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nome TEXT NOT NULL,
-            preco REAL NOT NULL,
-            vendedor_nome INTEGER,
-            FOREIGN KEY(vendedor_nome) REFERENCES vendedores(nome)
-            )''')
-        
-        self.connection.commit()
-        
-        self.desconectar()
-        
+            
+            self.cursor.execute('''CREATE TABLE IF NOT EXISTS vendedores (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                sobrenome TEXT NOT NULL,
+                cnpj TEXT UNIQUE NOT NULL
+                )''')
+            
+            self.cursor.execute('''CREATE TABLE IF NOT EXISTS itens (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL,
+                preco REAL NOT NULL,
+                vendedor_nome INTEGER,
+                FOREIGN KEY(vendedor_nome) REFERENCES vendedores(nome)
+                )''')
+
     def criarComprador(self, nome: str, sobrenome: str, dinheiro: float, cpf: str) -> None:
-        self.conectar()
-        
-        self.cursor.execute("INSERT INTO compradores (nome, sobrenome, dinheiro, cpf) VALUES (?,?,?,?)", (nome, sobrenome, dinheiro, cpf))
-        
-        self.connection.commit()
-        
-        self.desconectar()
-        
+        with self:
+            self.cursor.execute("INSERT INTO compradores (nome, sobrenome, dinheiro, cpf) VALUES (?,?,?,?)", 
+                                (nome, sobrenome, dinheiro, cpf))
+
     def criarVendedor(self, nome: str, sobrenome: str, cnpj: str) -> None:
-        self.conectar()
-        
-        self.cursor.execute("INSERT INTO vendedores (nome, sobrenome, cnpj) VALUES (?,?,?)", (nome, sobrenome, cnpj))
-        
-        self.connection.commit()
-        
-        self.desconectar()
-        
+        with self:
+            self.cursor.execute("INSERT INTO vendedores (nome, sobrenome, cnpj) VALUES (?,?,?)", 
+                                (nome, sobrenome, cnpj))
+
     def criarItem(self, nome: str, preco: float, vendedor: str) -> None:
-        self.conectar()
-        
-        self.cursor.execute("INSERT INTO itens (nome, preco, vendedor_nome) VALUES (?,?,?)", (nome, preco, vendedor))
-        
-        self.connection.commit()
-        
-        self.desconectar()
-        
+        with self:
+            self.cursor.execute("INSERT INTO itens (nome, preco, vendedor_nome) VALUES (?,?,?)", 
+                                (nome, preco, vendedor))
+
     def getCompradores(self) -> list:
-        self.conectar()
-        
-        self.cursor.execute("SELECT * FROM compradores")
-        compradores = self.cursor.fetchall()
-        
-        self.desconectar()
-        
-        return compradores
+        with self:
+            self.cursor.execute("SELECT * FROM compradores")
+            return self.cursor.fetchall()
     
     def getVendedores(self) -> list:
-        self.conectar()
-        
-        self.cursor.execute("SELECT * FROM vendedores")
-        vendedores = self.cursor.fetchall()
-        
-        self.desconectar()
-        
-        return vendedores
+        with self:
+            self.cursor.execute("SELECT * FROM vendedores")
+            return self.cursor.fetchall()
     
     def getItens(self) -> list:
-        self.conectar()
-        
-        self.cursor.execute("SELECT * FROM itens")
-        itens = self.cursor.fetchall()
-        
-        self.desconectar()
-        
-        return itens
+        with self:
+            self.cursor.execute("SELECT * FROM itens")
+            return self.cursor.fetchall()
     
     def getVendedoresNome(self) -> list:
-        self.conectar()
-        
-        self.cursor.execute("SELECT nome FROM vendedores")
-        vendedores_nome = self.cursor.fetchall()
-        
-        self.desconectar()
-        
-        return [vendedor[0] for vendedor in vendedores_nome]
+        with self:
+            self.cursor.execute("SELECT nome FROM vendedores")
+            return [vendedor[0] for vendedor in self.cursor.fetchall()]
     
     def getCompradoresNome(self) -> list:
-        self.conectar()
-        
-        self.cursor.execute("SELECT nome FROM compradores")
-        compradores_nome = self.cursor.fetchall()
-        
-        self.desconectar()
-        
-        return [comprador[0] for comprador in compradores_nome]
+        with self:
+            self.cursor.execute("SELECT nome FROM compradores")
+            return [comprador[0] for comprador in self.cursor.fetchall()]
     
     def getItensNome(self) -> list:
-        self.conectar()
-        
-        self.cursor.execute("SELECT nome FROM itens")
-        itens_nome = self.cursor.fetchall()
-        
-        self.desconectar()
-        
-        return [item[0] for item in itens_nome]
+        with self:
+            self.cursor.execute("SELECT nome FROM itens")
+            return [item[0] for item in self.cursor.fetchall()]
     
     def getCompradorDinheiro(self, nome: str) -> float:
-        self.conectar()
-        
-        self.cursor.execute("SELECT dinheiro FROM compradores WHERE nome=?", (nome,))
-        dinheiro = self.cursor.fetchone()
-        
-        self.desconectar()
-        
-        if dinheiro:
-            return dinheiro[0]
-        else:
-            return 0
+        with self:
+            self.cursor.execute("SELECT dinheiro FROM compradores WHERE nome=?", (nome,))
+            dinheiro = self.cursor.fetchone()
+            return dinheiro[0] if dinheiro else 0
         
     def getItemPreco(self, nome: str) -> float:
-        self.conectar()
+        with self:
+            self.cursor.execute("SELECT preco FROM itens WHERE nome=?", (nome,))
+            preco = self.cursor.fetchone()
+            return preco[0] if preco else 0
         
-        self.cursor.execute("SELECT preco FROM itens WHERE nome=?", (nome,))
-        preco = self.cursor.fetchone()
-        
-        self.desconectar()
-        
-        if preco:
-            return preco[0]
-        else:
-            return 0
-        
-    def setCompradorDinheiro(self, nome: str, dinheiro: float) -> float:
-        self.conectar()
-        
-        self.cursor.execute("UPDATE compradores SET dinheiro=? WHERE nome=?", (self.getCompradorDinheiro(nome) - dinheiro, nome))
-        self.connection.commit()
-        
-        self.desconectar()
-        
-        return self.getCompradorDinheiro(nome)
+    def setCompradorDinheiro(self, nome: str, dinheiro: float) -> None:
+        with self:
+            self.cursor.execute("UPDATE compradores SET dinheiro=? WHERE nome=?", (dinheiro, nome))
     
     def getItensCarrinho(self, nome: str) -> str:
-        self.conectar()
-        
-        self.cursor.execute("SELECT carrinho FROM compradores WHERE nome=?", (nome,))
-        carrinho = self.cursor.fetchone()
-        
-        self.desconectar()
-        
-        if carrinho:
-            return carrinho[0]
-        else:
-            return ""
+        with self:
+            self.cursor.execute("SELECT carrinho FROM compradores WHERE nome=?", (nome,))
+            carrinho = self.cursor.fetchone()
+            return carrinho[0] if carrinho else ""
         
     def adicionarItemCarrinho(self, nome: str, item: str) -> None:
         carrinho = self.getItensCarrinho(nome)
-        
-        carrinho = carrinho + " " + item
-        
-        self.conectar()
-        
-        self.cursor.execute("UPDATE compradores SET carrinho=? WHERE nome=?", (carrinho, nome))
-        self.connection.commit()
-        
-        self.desconectar()
-        
+        carrinho = carrinho + " " + item if carrinho else item
+        with self:
+            self.cursor.execute("UPDATE compradores SET carrinho=? WHERE nome=?", (carrinho, nome))
+
     def setItemCarrinho(self, nome: str, carrinho: str) -> None:
-        self.conectar()
-        
-        self.cursor.execute("UPDATE compradores SET carrinho=? WHERE nome=?", (carrinho, nome))
-        self.connection.commit()
-        
-        self.desconectar()
-    
+        with self:
+            self.cursor.execute("UPDATE compradores SET carrinho=? WHERE nome=?", (carrinho, nome))
+
 if __name__ == '__main__':
     pass
