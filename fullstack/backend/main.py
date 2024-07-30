@@ -26,7 +26,7 @@ def criar_comprador():
         except:
             return redirect(url_for('index', message = 'Digite apenas números no campo de Dinheiro'))
     
-    criarComprador(nome, sobrenome, dinheiro, cpf)
+    geren.criarComprador(nome, sobrenome, dinheiro, cpf)
     
     return redirect(url_for('index', message = 'Comprador criado com sucesso'))
 
@@ -49,13 +49,11 @@ def adicionar_item():
 def remover_item():
     if request.method == 'POST':
         pass
-
-def criarComprador(nome, sobrenome, dinheiro, cpf):
-    geren.criarComprador(nome, sobrenome, dinheiro, cpf)
     
-    compradores = geren.getCompradores()
-    
-    return compradores
+@app.route('/ver_carrinho', methods=['POST'])
+def ver_carrinho():
+    if request.method == 'POST':
+        pass
 
 if __name__ == '__main__':
     geren.criar_tabelas()
