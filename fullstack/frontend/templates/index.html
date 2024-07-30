@@ -218,33 +218,35 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label for="comprador">Comprador</label>
-                            <select class="form-select" id="comprador" name="comprador" required>
-                                <option value="">Selecione um comprador...</option>
-                                {% for comprador in compradores %}
-                                <option value="{{ comprador[1] }}">{{ comprador[1] }}: R${{ comprador[3] }}</option>
-                                {% endfor %}
-                            </select>
+                    <form action="/remover_item" method="post">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="comprador">Comprador</label>
+                                <select class="form-select" id="comprador" name="comprador" required>
+                                    <option value="">Selecione um comprador...</option>
+                                    {% for comprador in compradores %}
+                                    <option value="{{ comprador[1] }}">{{ comprador[1] }}: R${{ comprador[3] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="item">Item</label>
+                                <select class="form-select" id="item" name="item" required>
+                                    <option value="">Selecione um item...</option>
+                                    {% for item in itens %}
+                                    <option value="{{ item[1:] }}">{{ item[1] }}: R${{ item[2] }} [{{ item[3] }}]
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="item">Item</label>
-                            <select class="form-select" id="item" name="item" required>
-                                <option value="">Selecione um item...</option>
-                                {% for item in itens %}
-                                <option value="{{ item[1:] }}">{{ item[1] }}: R${{ item[2] }} [{{ item[3] }}]
-                                </option>
-                                {% endfor %}
-                            </select>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Remover</button>
                         </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                        <button type="submit" class="btn btn-primary">Remover</button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
