@@ -193,7 +193,7 @@
                                 <select class="form-select" id="item" name="item" required>
                                     <option value="">Selecione um item...</option>
                                     {% for item in itens %}
-                                    <option value="{{ item[1] }}">{{ item[1] }}: R${{ item[2] }} [{{ item[3] }}]
+                                    <option value="{{ item[1:] }}">{{ item[1] }}: R${{ item[2] }} [{{ item[3] }}]
                                     </option>
                                     {% endfor %}
                                 </select>
@@ -254,15 +254,14 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
-                    <form action="">
+                    <form action="/ver_carrinho" method="post">
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="comprador">Comprador</label>
                                 <select class="form-select" id="comprador" name="comprador" required>
                                     <option value="">Selecione um comprador...</option>
                                     {% for comprador in compradores %}
-                                    <option value="{{ comprador[1] }}">{{ comprador[1] }}: R${{ comprador[3] }}
-                                    </option>
+                                    <option value="{{ comprador[1] }}">{{ comprador[1] }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -283,9 +282,24 @@
             <div>
                 <h5>Carrinho</h5>
                 <div class="carrinho">
-                    {% for i in carrinho %}
-                    <p>{{ i }}</p>
-                    {% endfor %}
+                    {% if carrinho %}
+                    <table>
+                        <thead>
+                            <td>Item</td>
+                            <td>Valor</td>
+                            <td>Vendedor</td>
+                        </thead>
+                        {% for i in carrinho %}
+                        <tr>
+                            <td>{{ i[0] }}</td>
+                            <td>{{ i[1] }}</td>
+                            <td>{{ i[2] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                    {% else %}
+                    <p>Você não está vendo o carrinho de alguém.</p>
+                    {% endif %}
                 </div>
             </div>
             <div>

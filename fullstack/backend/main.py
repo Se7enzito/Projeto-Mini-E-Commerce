@@ -1,5 +1,6 @@
-from flask import Flask, render_template, request, url_for, redirect, jsonify
+from flask import Flask, render_template, request, url_for, redirect
 from db.dbAPI import Gerenciamento
+import re, ast
 
 app = Flask(__name__, template_folder="../frontend/templates")
 
@@ -8,16 +9,22 @@ app.static_url_path = '/static'
 
 geren = Gerenciamento()
 
+def parse_carrinho(carrinho_str):
+    carrinho_str = carrinho_str.replace(" ", "")
+    carrinho_str = carrinho_str.replace("[[", "[").replace("]]", "]")
+
+    items = re.findall(r'\[([^\]]+)\]', carrinho_str)
+    
+    result = []
+    for item in items:
+        result.append(item.split(','))
+    
+    return result
+
 @app.route('/')
 def index():
-    message = ''
-    return render_template('index.html', message = message, compradores = geren.getCompradores(), vendedores = geren.getVendedores(), itens = geren.getItens())
-    
-@app.route('/get_items', methods=['GET'])
-def get_items():
-    comprador = request.args.get('comprador')
-    items = geren.getItensCarrinho(comprador)
-    return jsonify(items)
+    carrinho = request.args.get('carrinho', '')
+    return render_template('index.html', compradores=geren.getCompradores(), vendedores=geren.getVendedores(), itens=geren.getItens(), carrinho=carrinho)
 
 @app.route('/criar_comprador', methods=['POST'])
 def criar_comprador():
@@ -30,11 +37,11 @@ def criar_comprador():
         try:
             dinheiro = float(dinheiro)
         except:
-            return redirect(url_for('index', message = 'Digite apenas números no campo de Dinheiro'))
+            return redirect(url_for('index'))
     
     geren.criarComprador(nome, sobrenome, dinheiro, cpf)
     
-    return redirect(url_for('index', message = 'Comprador criado com sucesso'))
+    return render_template('index.html', message='Comprador criado com sucesso', compradores=geren.getCompradores(), vendedores=geren.getVendedores(), itens=geren.getItens())
 
 @app.route('/criar_vendedor', methods=['POST'])
 def criar_vendedor():
@@ -45,7 +52,7 @@ def criar_vendedor():
         
         geren.criarVendedor(nome, sobrenome, cnpj)
         
-        return redirect(url_for('index', message = 'Vendedor criado com sucesso'))
+        return redirect(url_for('index'))
 
 @app.route('/criar_item', methods=['POST'])
 def criar_item():
@@ -57,16 +64,16 @@ def criar_item():
         try:
             preco = float(preco)
         except:
-            return redirect(url_for('index', message = 'Digite apenas números no campo de Preço'))
+            return redirect(url_for('index'))
         
         vendedores = geren.getVendedoresNome()
         
         if vendedor not in vendedores:
-            return redirect(url_for('index', message = 'Vendedor não encontrado'))
+            return redirect(url_for('index'))
         
         geren.criarItem(nome, preco, vendedor)
         
-        return redirect(url_for('index', message = 'Item criado com sucesso'))
+        return redirect(url_for('index'))
 
 @app.route('/adicionar_item', methods=['POST'])
 def adicionar_item():
@@ -74,16 +81,24 @@ def adicionar_item():
         comprador = request.form.get('comprador')
         item = request.form.get('item')
         
-        dinheiro = geren.getCompradorDinheiro(comprador)
-        preco = geren.getItemPreco(item)
+        try:
+            item_tuple = ast.literal_eval(item)
+            item_list = list(item_tuple)
+        except (ValueError, SyntaxError) as e:
+            item_list = []
         
-        if dinheiro < preco:
-            return redirect(url_for('index', message = 'Você não possui dinheiro suficiente para este item'))
+        itemList = geren.getItensCarrinho(comprador)
         
-        geren.setCompradorDinheiro(comprador, dinheiro - preco)
-        geren.adicionarItemCarrinho(comprador, item)
-            
-        return redirect(url_for('index', message='Item adicionado ao carrinho com sucesso'))
+        try:
+            carrinho_list = parse_carrinho(itemList)
+        except Exception as e:
+            carrinho_list = []
+        
+        carrinho_list.append(item_list)
+        
+        geren.setItemCarrinho(comprador, str(carrinho_list))
+        
+        return redirect(url_for('index'))
 
 @app.route('/remover_item', methods=['POST'])
 def remover_item():
@@ -91,29 +106,41 @@ def remover_item():
         comprador = request.form.get('comprador')
         item = request.form.get('item')
         
-        itens = geren.getItensCarrinho(comprador)
-        listaItens = itens.split(' ')
-        itensAtua = ""
+        try:
+            item_tuple = ast.literal_eval(item)
+            item_list = list(item_tuple)
+        except (ValueError, SyntaxError) as e:
+            item_list = []
         
-        for i in listaItens:
-            if i == item:
-                listaItens.remove(i)
-            else:
-                itensAtua = itensAtua + " " + i
-                
-        geren.setItemCarrinho(comprador, itensAtua)
+        itemList = geren.getItensCarrinho(comprador)
         
-        return redirect(url_for('index', message = 'Item removido do carrinho com sucesso'))
-                
+        try:
+            carrinho_list = parse_carrinho(itemList)
+        except Exception as e:
+            carrinho_list = []
+            
+        if item_list in carrinho_list:
+            carrinho_list.remove(item_list)
+        else:
+            return redirect(url_for('index'))
+        
+        geren.setItemCarrinho(comprador, str(carrinho_list))
+        
+        return redirect(url_for('index'))
+
 @app.route('/ver_carrinho', methods=['POST'])
 def ver_carrinho():
     if request.method == 'POST':
         comprador = request.form.get('comprador')
         
-        compradores = geren.getCompradoresNome()
         carrinho = geren.getItensCarrinho(comprador)
         
-        return redirect(url_for('index', carrinho = carrinho))
+        try:
+            carrinho_list = parse_carrinho(carrinho)
+        except Exception as e:
+            carrinho_list = []
+        
+        return render_template('index.html', carrinho=carrinho_list, compradores=geren.getCompradores(), vendedores=geren.getVendedores(), itens=geren.getItens())
 
 if __name__ == '__main__':
     geren.criar_tabelas()

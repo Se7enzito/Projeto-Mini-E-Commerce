@@ -60,26 +60,11 @@ const myModal = new bootstrap.Modal(
     options,
 );
 
-$(document).ready(function() {
-    $('#comprador').change(function() {
-        var comprador = $(this).val();
-        if (comprador) {
-            $.ajax({
-                url: '/get_items',
-                type: 'GET',
-                data: { comprador: comprador },
-                success: function(data) {
-                    var items = JSON.parse(data);
-                    $('#item').empty();
-                    $('#item').append('<option value="">Selecione um item...</option>');
-                    items.forEach(function(item) {
-                        $('#item').append('<option value="' + item.id + '">' + item.name + '</option>');
-                    });
-                }
-            });
-        } else {
-            $('#item').empty();
-            $('#item').append('<option value="">Selecione um item...</option>');
-        }
-    });
+const forms = document.querySelectorAll('form');
+
+forms.forEach(form => {
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    window.location.reload();
+  });
 });

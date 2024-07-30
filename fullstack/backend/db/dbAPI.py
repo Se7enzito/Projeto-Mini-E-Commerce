@@ -104,17 +104,11 @@ class Gerenciamento():
         with self:
             self.cursor.execute("UPDATE compradores SET dinheiro=? WHERE nome=?", (dinheiro, nome))
     
-    def getItensCarrinho(self, nome: str) -> str:
+    def getItensCarrinho(self, nome: str) -> list:
         with self:
             self.cursor.execute("SELECT carrinho FROM compradores WHERE nome=?", (nome,))
             carrinho = self.cursor.fetchone()
             return carrinho[0] if carrinho else ""
-        
-    def adicionarItemCarrinho(self, nome: str, item: str) -> None:
-        carrinho = self.getItensCarrinho(nome)
-        carrinho = carrinho + " " + item if carrinho else item
-        with self:
-            self.cursor.execute("UPDATE compradores SET carrinho=? WHERE nome=?", (carrinho, nome))
 
     def setItemCarrinho(self, nome: str, carrinho: str) -> None:
         with self:
