@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Desafio E-Commerce</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+    <header>
+        <div>
+            <h1>Desafio E-Commerce</h1>
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <button type="button" class="btn btn-primary btn-lg nav-link" data-bs-toggle="modal"
+                                data-bs-target="#modalComprador">Criar Comprador</button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button" class="btn btn-primary btn-lg nav-link" data-bs-toggle="modal"
+                                data-bs-target="#modalVendedor">Criar Vendedor</button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button" class="btn btn-primary btn-lg nav-link" data-bs-toggle="modal"
+                                data-bs-target="#modalItem">Criar Item</button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button" class="btn btn-primary btn-lg nav-link" data-bs-toggle="modal"
+                                data-bs-target="#modalAddCarrinho">Adicionar ao Carrinho</button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button" class="btn btn-primary btn-lg nav-link" data-bs-toggle="modal"
+                                data-bs-target="#modalRemCarrinho">Remover do Carrinho</button>
+                        </li>
+                        <li class="nav-item">
+                            <button type="button" class="btn btn-primary btn-lg nav-link" data-bs-toggle="modal"
+                                data-bs-target="#modalVerCarrinho">Ver Carrinho</button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+        <div class="modal fade" id="modalComprador" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+            role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitleId">Criar Comprador</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form action="/criar_comprador" method="post">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="nome">Nome</label>
+                                <input type="text" class="form-control" id="nome" name="nome" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sobrenome">Sobrenome</label>
+                                <input type="text" class="form-control" id="sobrenome" name="sobrenome" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dinheiro">Dinheiro</label>
+                                <input type="text" class="form-control" id="dinheiro" name="diinheiro" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cpf">CPF</label>
+                                <input type="text" class="form-control" id="cpf" name="cpf" required>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Criar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalVendedor" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+            role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitleId">Criar Vendedor</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form action="/criar_vendedor" method="post">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="nome">Nome</label>
+                                <input type="text" class="form-control" id="nome" name="nome" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sobrenome">Sobrenome</label>
+                                <input type="text" class="form-control" id="sobrenome" name="sobrenome" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cnpj">CNPJ</label>
+                                <input type="text" class="form-control" id="cnpj" name="cnpj" required>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                            <button type="submit" class="btn btn-primary">Criar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalItem" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+            role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitleId">Criar Item</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="nome">Nome</label>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="preco">Preço</label>
+                            <input type="text" class="form-control" id="preco" name="preco" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="vendedor">Vendedor</label>
+                            <input type="text" class="form-control" id="vendedor" name="vendedor" required>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalAddCarrinho" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+            role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitleId">Adicionar ao Carrinho</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="comprador">Comprador</label>
+                            <input type="text" class="form-control" id="comprador" name="comprador" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="item">Item</label>
+                            <input type="text" class="form-control" id="item" name="item" required>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalRemCarrinho" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+            role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitleId">Remover do Carrinho</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="comprador">Comprador</label>
+                            <input type="text" class="form-control" id="comprador" name="comprador" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="item">Item</label>
+                            <input type="text" class="form-control" id="item" name="item" required>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalVerCarrinho" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+            role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitleId">Ver Carrinho</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form action="">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="comprador">Comprador</label>
+                                <input type="text" class="form-control" id="comprador" name="comprador" required>
+                            </div>
+
+                            <div id="carrinho"></div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div>
+            <div>
+                <h5>Compradores</h5>
+
+                <table>
+                    <thead>
+                        <td>Nome</td>
+                        <td>Sobrenome</td>
+                        <td>Dinheiro</td>
+                        <td>CPF</td>
+                    </thead>
+
+                    {% for comprador in compradores %}
+                    <tr>
+                        {% for dado in comprador %}
+                            <td>{{ dado }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div>
+                <h5>Vendedores</h5>
+
+                <table>
+                    <thead>
+                        <td>Nome</td>
+                        <td>Sobrenome</td>
+                        <td>CNPJ</td>
+                    </thead>
+
+                    {% for vendedor in vendedores %}
+                    <tr>
+                        {% for dado in vendedor %}
+                            <td>{{ dado }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+
+            <div>
+                <h5>Itens</h5>
+                
+                <table>
+                    <thead>
+                        <td>Nome</td>
+                        <td>Valor</td>
+                        <td>Vendedor</td>
+                    </thead>
+
+                    {% for item in itens %}
+                    <tr>
+                        {% for dado in item %}
+                            <td>{{ dado }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container footer text-center">
+            <p>Criado por <a href="github.com/Se7enzito">Bernardo de Castro</a></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script>
+        const myModal = new bootstrap.Modal(
+            document.getElementById("modalId"),
+            options,
+        );
+    </script>
+</body>
+
+</html>
