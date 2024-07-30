@@ -11,7 +11,7 @@ geren = Gerenciamento()
 @app.route('/')
 def index():
     message = ''
-    return render_template('index.html', message = message, compradores = None, vendedores = None, itens = None)
+    return render_template('index.html', message = message, compradores = geren.getCompradores(), vendedores = geren.getVendedores(), itens = geren.getItens())
 
 @app.route('/criar_comprador', methods=['POST'])
 def criar_comprador():
@@ -25,8 +25,8 @@ def criar_comprador():
             dinheiro = float(dinheiro)
         except:
             return redirect(url_for('index', message = 'Digite apenas números no campo de Dinheiro'))
-        
-    geren.criarComprador(nome, sobrenome, dinheiro, cpf)
+    
+    criarComprador(nome, sobrenome, dinheiro, cpf)
     
     return redirect(url_for('index', message = 'Comprador criado com sucesso'))
 
@@ -49,6 +49,13 @@ def adicionar_item():
 def remover_item():
     if request.method == 'POST':
         pass
+
+def criarComprador(nome, sobrenome, dinheiro, cpf):
+    geren.criarComprador(nome, sobrenome, dinheiro, cpf)
+    
+    compradores = geren.getCompradores()
+    
+    return compradores
 
 if __name__ == '__main__':
     geren.criar_tabelas()

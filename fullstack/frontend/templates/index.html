@@ -71,7 +71,7 @@
 
                             <div class="form-group">
                                 <label for="dinheiro">Dinheiro</label>
-                                <input type="text" class="form-control" id="dinheiro" name="diinheiro" required>
+                                <input type="number" class="form-control" id="dinheiro" name="dinheiro" required>
                             </div>
 
                             <div class="form-group">
@@ -251,8 +251,8 @@
             <div>
                 <h5>Compradores</h5>
 
-                <table>
-                    <thead>
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
                         <td>Nome</td>
                         <td>Sobrenome</td>
                         <td>Dinheiro</td>
@@ -261,7 +261,7 @@
 
                     {% for comprador in compradores %}
                     <tr>
-                        {% for dado in comprador %}
+                        {% for dado in comprador[1:-1] %}
                             <td>{{ dado }}</td>
                         {% endfor %}
                     </tr>
@@ -272,8 +272,8 @@
             <div>
                 <h5>Vendedores</h5>
 
-                <table>
-                    <thead>
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
                         <td>Nome</td>
                         <td>Sobrenome</td>
                         <td>CNPJ</td>
@@ -292,8 +292,8 @@
             <div>
                 <h5>Itens</h5>
                 
-                <table>
-                    <thead>
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
                         <td>Nome</td>
                         <td>Valor</td>
                         <td>Vendedor</td>
@@ -320,12 +320,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
-    <script>
-        const myModal = new bootstrap.Modal(
-            document.getElementById("modalId"),
-            options,
-        );
-    </script>
+    <script src="{{ url_for('static', filename='js/main.css') }}"></script>
 </body>
 
 </html>

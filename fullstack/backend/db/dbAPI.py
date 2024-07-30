@@ -71,5 +71,35 @@ class Gerenciamento():
         
         self.desconectar()
         
+    def getCompradores(self) -> list:
+        self.conectar()
+        
+        self.cursor.execute("SELECT * FROM compradores")
+        compradores = self.cursor.fetchall()
+        
+        self.desconectar()
+        
+        return compradores
+    
+    def getVendedores(self) -> list:
+        self.conectar()
+        
+        self.cursor.execute("SELECT * FROM vendedores")
+        vendedores = self.cursor.fetchall()
+        
+        self.desconectar()
+        
+        return vendedores
+    
+    def getItens(self) -> list:
+        self.conectar()
+        
+        self.cursor.execute("SELECT * FROM itens")
+        itens = self.cursor.fetchall()
+        
+        self.desconectar()
+        
+        return itens
+        
 if __name__ == '__main__':
     pass
